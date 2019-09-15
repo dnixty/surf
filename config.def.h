@@ -45,16 +45,6 @@ static UriParameters uriparams[] = {
 static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
                                     WEBKIT_FIND_OPTIONS_WRAP_AROUND;
 
-/* #define SETPROP(p, q) { \ */
-/*         .v = (const char *[]){ "/bin/sh", "-c", \ */
-/*              "prop=\"`xprop -id $2 $0 " \ */
-/*              "| sed \"s/^$0(STRING) = \\(\\\\\"\\?\\)\\(.*\\)\\1$/\\2/\" " \ */
-/*              "| xargs -0 printf %b | dmenu`\" &&" \ */
-/*              "xprop -id $2 -f $1 8s -set $1 \"$prop\"", \ */
-/*              p, q, winid, NULL \ */
-/*         } \ */
-/* } */
-
 #define PROMPT_GO   "Go:"
 #define PROMPT_FIND "Find:"
 
@@ -125,44 +115,47 @@ static SiteStyle styles[] = {
  */
 static Key keys[] = {
 	/* modifier              keyval          function    arg */
-	{ MODKEY,                GDK_KEY_g,      spawn,      SETPROP("_SURF_URI", "_SURF_GO", PROMPT_GO) },
-	{ MODKEY,                GDK_KEY_f,      spawn,      SETPROP("_SURF_FIND", "_SURF_FIND", PROMPT_FIND) },
-	{ MODKEY,                GDK_KEY_slash,  spawn,      SETPROP("_SURF_FIND", "_SURF_FIND", PROMPT_FIND) },
-  { MODKEY,                GDK_KEY_m,      spawn,      BM_ADD("_SURF_URI") },
+	{ 0,                     GDK_KEY_g,      spawn,      SETPROP("_SURF_URI", "_SURF_GO", PROMPT_GO) },
+	{ 0,                     GDK_KEY_f,      spawn,      SETPROP("_SURF_FIND", "_SURF_FIND", PROMPT_FIND) },
+	{ 0,                     GDK_KEY_slash,  spawn,      SETPROP("_SURF_FIND", "_SURF_FIND", PROMPT_FIND) },
+  { 0,                     GDK_KEY_m,      spawn,      BM_ADD("_SURF_URI") },
 
-	{ 0,                     GDK_KEY_Escape, stop,       { 0 } },
-	{ MODKEY,                GDK_KEY_c,      stop,       { 0 } },
+  { 0,                     GDK_KEY_i,      insert,     { .i = 1 } },
+	{ 0,                     GDK_KEY_Escape, insert,     { .i = 0 } },
 
-	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_r,      reload,     { .b = 1 } },
-	{ MODKEY,                GDK_KEY_r,      reload,     { .b = 0 } },
+	{ 0,                     GDK_KEY_c,      stop,       { 0 } },
 
-	{ MODKEY,                GDK_KEY_l,      navigate,   { .i = +1 } },
-	{ MODKEY,                GDK_KEY_h,      navigate,   { .i = -1 } },
+	{ MODKEY,                GDK_KEY_r,      reload,     { .b = 1 } },
+	{ 0,                     GDK_KEY_r,      reload,     { .b = 0 } },
+
+	{ 0,                     GDK_KEY_l,      navigate,   { .i = +1 } },
+	{ 0,                     GDK_KEY_h,      navigate,   { .i = -1 } },
 
 	/* Currently we have to use scrolling steps that WebKit2GTK+ gives us
 	 * d: step down, u: step up, r: step right, l:step left
 	 * D: page down, U: page up */
-	{ MODKEY,                GDK_KEY_j,      scroll,     { .i = 'd' } },
-	{ MODKEY,                GDK_KEY_k,      scroll,     { .i = 'u' } },
-	{ MODKEY,                GDK_KEY_b,      scroll,     { .i = 'U' } },
-	{ MODKEY,                GDK_KEY_space,  scroll,     { .i = 'D' } },
-	{ MODKEY,                GDK_KEY_i,      scroll,     { .i = 'r' } },
-	{ MODKEY,                GDK_KEY_u,      scroll,     { .i = 'l' } },
+	{ 0,                     GDK_KEY_j,      scroll,     { .i = 'd' } },
+	{ 0,                     GDK_KEY_k,      scroll,     { .i = 'u' } },
+	{ 0,                     GDK_KEY_b,      scroll,     { .i = 'U' } },
+	{ 0,                     GDK_KEY_space,  scroll,     { .i = 'D' } },
+	{ 0,                     GDK_KEY_i,      scroll,     { .i = 'r' } },
+	{ 0,                     GDK_KEY_u,      scroll,     { .i = 'l' } },
 
 
-	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_j,      zoom,       { .i = -1 } },
-	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_k,      zoom,       { .i = +1 } },
-	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_q,      zoom,       { .i = 0  } },
-	{ MODKEY,                GDK_KEY_minus,  zoom,       { .i = -1 } },
-	{ MODKEY,                GDK_KEY_plus,   zoom,       { .i = +1 } },
+	{ 0|GDK_SHIFT_MASK,      GDK_KEY_j,      zoom,       { .i = -1 } },
+	{ 0|GDK_SHIFT_MASK,      GDK_KEY_k,      zoom,       { .i = +1 } },
+	{ 0|GDK_SHIFT_MASK,      GDK_KEY_q,      zoom,       { .i = 0  } },
+	{ 0,                     GDK_KEY_minus,  zoom,       { .i = -1 } },
+	{ 0|GDK_SHIFT_MASK,      GDK_KEY_plus,   zoom,       { .i = +1 } },
+  { 0,                     GDK_KEY_equal,  zoom,       { .i = 0  } },
 
-	{ MODKEY,                GDK_KEY_p,      clipboard,  { .b = 1 } },
-	{ MODKEY,                GDK_KEY_y,      clipboard,  { .b = 0 } },
+	{ 0,                     GDK_KEY_p,      clipboard,  { .b = 1 } },
+	{ 0,                     GDK_KEY_y,      clipboard,  { .b = 0 } },
 
-	{ MODKEY,                GDK_KEY_n,      find,       { .i = +1 } },
-	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_n,      find,       { .i = -1 } },
+	{ 0,                     GDK_KEY_n,      find,       { .i = +1 } },
+	{ 0|GDK_SHIFT_MASK,      GDK_KEY_n,      find,       { .i = -1 } },
 
-	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_p,      print,      { 0 } },
+	{ MODKEY,                GDK_KEY_p,      print,      { 0 } },
 
 	{ MODKEY|GDK_SHIFT_MASK, GDK_KEY_a,      togglecookiepolicy, { 0 } },
 	{ 0,                     GDK_KEY_F11,    togglefullscreen, { 0 } },

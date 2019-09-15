@@ -172,6 +172,7 @@ static void newwindow(Client *c, const Arg *a, int noembed);
 static void spawn(Client *c, const Arg *a);
 static void destroyclient(Client *c);
 static void cleanup(void);
+static int insertmode = 0;
 
 /* GTK/WebKit */
 static WebKitWebView *newview(Client *c, WebKitWebView *rv);
@@ -217,6 +218,7 @@ static void togglefullscreen(Client *c, const Arg *a);
 static void togglecookiepolicy(Client *c, const Arg *a);
 static void toggleinspector(Client *c, const Arg *a);
 static void find(Client *c, const Arg *a);
+static void insert(Client *c, const Arg *a);
 
 /* Buttons */
 static void clicknavigate(Client *c, const Arg *a, WebKitHitTestResult *h);
@@ -1109,7 +1111,11 @@ winevent(GtkWidget *w, GdkEvent *e, Client *c)
 		updatetitle(c);
 		break;
 	case GDK_KEY_PRESS:
-		if (!curconfig[KioskMode].val.b) {
+		if (!curconfig[KioskMode].val.i &&
+        !insertmode ||
+        CLEANMASK(e->key.state) == (MODKEY|GDK_SHIFT_MASK) ||
+        CLEANMASK(e->key.state) == (MODKEY) ||
+        gdk_keyval_to_lower(e->key.keyval) == (GDK_KEY_Escape)) {
 			for (i = 0; i < LENGTH(keys); ++i) {
 				if (gdk_keyval_to_lower(e->key.keyval) ==
 				    keys[i].keyval &&
@@ -1622,6 +1628,12 @@ find(Client *c, const Arg *a)
 		if (strcmp(s, "") == 0)
 			webkit_find_controller_search_finish(c->finder);
 	}
+}
+
+void
+insert(Client *c, const Arg *a)
+{
+        insertmode = (a->i);
 }
 
 void
