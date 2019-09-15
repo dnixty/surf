@@ -1,10 +1,10 @@
 /* modifier 0 means no modifier */
 static int surfuseragent    = 1;  /* Append Surf version to default WebKit user agent */
 static char *fulluseragent  = ""; /* Or override the whole user agent string */
-static char *scriptfile     = "~/.surf/script.js";
-static char *styledir       = "~/.surf/styles/";
-static char *cachedir       = "~/.surf/cache/";
-static char *cookiefile     = "~/.surf/cookies.txt";
+static char *scriptfile     = "~/.config/.surf/script.js";
+static char *styledir       = "~/.config/.surf/styles/";
+static char *cachedir       = "~/.config/.surf/cache/";
+static char *cookiefile     = "~/.config/.surf/cookies.txt";
 
 /* Webkit default features */
 static Parameter defconfig[ParameterLast] = {
@@ -13,7 +13,7 @@ static Parameter defconfig[ParameterLast] = {
 	SETV(CookiePolicies,     "@Aa"),
 	SETB(DiskCache,          1),
 	SETB(DNSPrefetch,        0),
-	SETI(FontSize,           12),
+	SETI(FontSize,           16),
 	SETB(FrameFlattening,    0),
 	SETB(Geolocation,        0),
 	SETB(HideBackground,     0),
@@ -82,6 +82,17 @@ static WebKitFindOptions findopts = WEBKIT_FIND_OPTIONS_CASE_INSENSITIVE |
         } \
 }
 
+/* BM_ADD(readprop) */
+#define BM_ADD(r) {\
+        .v = (const char *[]){ "/bin/sh", "-c", \
+             "(echo $(xprop -id $0 $1) | cut -d '\"' -f2 " \
+             "| sed 's/.*https*:\\/\\/\\(www\\.\\)\\?//' && cat ~/personal/bookmarks) " \
+             "| awk '!seen[$0]++' > ~/.config/surf/bookmarks.tmp && " \
+             "mv ~/.config/surf/bookmarks.tmp ~/personal/bookmarks", \
+             winid, r, NULL \
+        } \
+}
+
 /* styles */
 /*
  * The iteration will stop at the first match, beginning at the beginning of
@@ -104,6 +115,7 @@ static Key keys[] = {
 	{ MODKEY,                GDK_KEY_g,      spawn,      SETPROP("_SURF_URI", "_SURF_GO") },
 	{ MODKEY,                GDK_KEY_f,      spawn,      SETPROP("_SURF_FIND", "_SURF_FIND") },
 	{ MODKEY,                GDK_KEY_slash,  spawn,      SETPROP("_SURF_FIND", "_SURF_FIND") },
+  { MODKEY,                GDK_KEY_m,      spawn,      BM_ADD("_SURF_URI") },
 
 	{ 0,                     GDK_KEY_Escape, stop,       { 0 } },
 	{ MODKEY,                GDK_KEY_c,      stop,       { 0 } },
